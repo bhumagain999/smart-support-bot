@@ -1,0 +1,95 @@
+# smart_support_bot/app.py
+
+import streamlit as st
+from utils.qa_engine import load_vectorstore, answer_question
+
+st.title("📚 Smart Support Bot")
+
+query = st.text_input("Ask a question about your documents:")
+
+if "vectorstore" not in st.session_state:
+    with st.spinner("Loading documents and building index..."):
+        st.session_state.vectorstore = load_vectorstore("data/sample_docs.pdf")
+
+if query:
+    with st.spinner("Searching and generating answer..."):
+        response = answer_question(query, st.session_state.vectorstore)
+        st.write(response)
+
+# smart_support_bot/utils/embed.py
+
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
+from langchain.document_loaders import PyPDFLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+def embed_documents(path):
+    loader = PyPDFLoader(path)
+    documents = loader.load()
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+    docs = text_splitter.split_documents(documents)
+    embeddings = OpenAIEmbeddings()
+    vectorstore = FAISS.from_documents(docs, embeddings)
+    return vectorstore
+
+# smart_support_bot/utils/qa_engine.py
+
+from langchain.chains import RetrievalQA
+from langchain.chat_models import ChatOpenAI
+from utils.embed import embed_documents
+
+def load_vectorstore(path):
+    return embed_documents(path)
+
+def answer_question(query, vectorstore):
+    llm = ChatOpenAI(temperature=0.0)
+    qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=vectorstore.as_retriever())
+    result = qa_chain.run(query)
+    return result
+
+# smart_support_bot/requirements.txt
+openai
+langchain
+faiss-cpu
+streamlit
+pypdf
+
+# smart_support_bot/README.md
+
+# Smart Support Bot: LLM-Powered Q&A System
+
+This chatbot answers questions based on uploaded documents using OpenAI's GPT-4 and vector similarity search.
+
+## 🚀 Features
+- PDF ingestion and embedding
+- Semantic search with FAISS
+- Real-time QA via OpenAI LLM
+- Streamlit-based UI
+
+## 📦 Setup
+```bash
+git clone https://github.com/bhumagain999/smart-support-bot.git
+cd smart-support-bot
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+## 🧠 Architecture
+- **Embedding**: OpenAI `text-embedding-ada-002`
+- **Vector DB**: FAISS
+- **LLM**: OpenAI GPT-4
+
+## 📄 Example
+![screenshot](example.png)
+
+## 📚 Extendable Ideas
+- Multi-document support
+- Source highlighting
+- User login + chat history
+
+---
+✅ Built to complement the "Generative AI with LLMs" certification with hands-on learning.
+
+---
+
+# End of project scaffold
