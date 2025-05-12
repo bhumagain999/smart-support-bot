@@ -1,0 +1,17 @@
+# Navigate to your working directory
+cd path/to/smart_support_bot
+
+# Initialize git
+git init
+
+# Add remote GitHub repo
+git remote add origin https://github.com/your-username/smart-support-bot.git
+
+# Add files
+git add .
+
+# Commit
+git commit -m "Initial commit: Smart Support Bot with LLM and Streamlit"
+
+# Push
+git push -u origin main
