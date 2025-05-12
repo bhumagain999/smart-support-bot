@@ -5,7 +5,7 @@ cd path/to/smart_support_bot
 git init
 
 # Add remote GitHub repo
-git remote add origin https://github.com/your-username/smart-support-bot.git
+git remote add origin https://github.com/bhumagain999/smart-support-bot.git
 
 # Add files
 git add .
